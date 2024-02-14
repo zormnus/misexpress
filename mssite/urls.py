@@ -2,18 +2,24 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
-from products.views import ProductsAdminViewSet
+from products.views import ProductsAdminViewSet, ProductsClientViewSet
 from django.conf.urls.static import static
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from users.views import (
+    TokenObtainPairViewDoc,
+    TokenRefreshViewDoc,
+    TokenVerifyViewDoc,
+)
 
 
 router = DefaultRouter()
 
 router.register(r"products", ProductsAdminViewSet)
+router.register(r"catalog", ProductsClientViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -31,6 +37,9 @@ urlpatterns = [
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),
+    path("api/token/", TokenObtainPairViewDoc.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshViewDoc.as_view(), name="token_refresh"),
+    path("api/token/verify/", TokenVerifyViewDoc.as_view(), name="token_verify"),
 ]
 
 

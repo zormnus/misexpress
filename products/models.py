@@ -52,6 +52,9 @@ class ProductType(models.Model):
         max_length=255,
         unique=True,
     )
+    subtypes = models.ManyToManyField(
+        ProductSubType,
+    )
 
     def __str__(self) -> str:
         return self.name
@@ -66,6 +69,9 @@ class Category(models.Model):
     name = models.CharField(
         max_length=255,
         unique=True,
+    )
+    types = models.ManyToManyField(
+        ProductType,
     )
 
     def __str__(self) -> str:
@@ -120,14 +126,6 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    category = models.ForeignKey(
-        Category,
-        on_delete=models.CASCADE,
-    )
-    productType = models.ForeignKey(
-        ProductType,
-        on_delete=models.CASCADE,
-    )
     subType = models.ManyToManyField(
         ProductSubType,
     )
@@ -178,7 +176,9 @@ class Product(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = slugify(str(self.name))
+        self.slug = slugify(
+            f"{str(self.vendor_code)}-{str(self.name)}-{str(self.color.name)}"
+        )
         return super().save(*args, **kwargs)
 
     class Meta:
