@@ -1,5 +1,6 @@
 from django.db import models
 from slugify import slugify
+from .validators import validate_positive_number
 
 
 class Color(models.Model):
@@ -32,7 +33,7 @@ class Brand(models.Model):
         ordering = ["-name"]
 
 
-class ProductSubType(models.Model):
+class Category(models.Model):
     name = models.CharField(
         max_length=255,
         unique=True,
@@ -42,8 +43,8 @@ class ProductSubType(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Product subtype"
-        verbose_name_plural = "Product subtypes"
+        verbose_name = "Product category"
+        verbose_name_plural = "Product categories"
         ordering = ["-name"]
 
 
@@ -52,8 +53,9 @@ class ProductType(models.Model):
         max_length=255,
         unique=True,
     )
-    subtypes = models.ManyToManyField(
-        ProductSubType,
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self) -> str:
@@ -65,21 +67,22 @@ class ProductType(models.Model):
         ordering = ["-name"]
 
 
-class Category(models.Model):
+class ProductSubType(models.Model):
     name = models.CharField(
         max_length=255,
         unique=True,
     )
-    types = models.ManyToManyField(
+    type = models.ForeignKey(
         ProductType,
+        on_delete=models.CASCADE,
     )
 
     def __str__(self) -> str:
         return self.name
 
     class Meta:
-        verbose_name = "Product category"
-        verbose_name_plural = "Product categories"
+        verbose_name = "Product subtype"
+        verbose_name_plural = "Product subtypes"
         ordering = ["-name"]
 
 
@@ -140,7 +143,9 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.DecimalField(
+        max_digits=10, decimal_places=2, validators=[validate_positive_number]
+    )
     season = models.CharField(
         max_length=50,
         null=True,

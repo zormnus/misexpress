@@ -23,7 +23,7 @@ router.register(r"catalog", ProductsClientViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include(router.urls)),
+    path("api/", include(router.urls)),
     # YOUR PATTERNS
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # Optional UI:
