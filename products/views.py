@@ -1,10 +1,10 @@
 from rest_framework import viewsets, mixins
 from .serializers import ProductUpdateSerializer, ProductSerializer
-from .models import Product, ProductSubType, ProductType
+from .models import Product
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from django.db.models import Subquery
+from .services import products_filter_service
 
 
 @extend_schema(tags=["Products"])
@@ -91,36 +91,19 @@ class ProductsClientViewSet(
 
     def get_queryset(self):
         request_data = self.request.GET
-        categories = request_data.getlist("cats", None)
-
-        if categories:
-            correct_products = (
-                Product.objects.prefetch_related("subType")
-                .filter(
-                    subType__type__category__in=Subquery(
-                        ProductSubType.objects.select_related("type__category")
-                        .filter(type__category__name__in=categories)
-                        .values("type__category")
-                    ),
-                )
-                .values("name")
-                .distinct()
-            )
-            correct_products_names = [item["name"] for item in correct_products]
-            self.queryset = self.queryset.filter(name__in=correct_products_names)
-        color = request_data.get("color", None)
-        if color:
-            self.queryset = self.queryset.filter(color__name=color)
-        size = request_data.get("size", None)
-        if size:
-            self.queryset = self.queryset.filter(size__name=size)
-        low_border_price = request_data.get("lbprice", None)
-        high_border_price = request_data.get("hbprice", None)
-        if low_border_price and high_border_price:
-            self.queryset = self.queryset.filter(
-                price__range=(low_border_price, high_border_price)
-            )
-        brands = request_data.getlist("brands", None)
-        if brands:
-            self.queryset = self.queryset.filter(brand__name__in=brands)
+        self.queryset = products_filter_service.apply_categories_filter(
+            request_data, self.queryset
+        )
+        self.queryset = products_filter_service.apply_color_filter(
+            request_data, self.queryset
+        )
+        self.queryset = products_filter_service.apply_size_filter(
+            request_data, self.queryset
+        )
+        self.queryset = products_filter_service.apply_price_filter(
+            request_data, self.queryset
+        )
+        self.queryset = products_filter_service.apply_brands_filter(
+            request_data, self.queryset
+        )
         return super().get_queryset()
