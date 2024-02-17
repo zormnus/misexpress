@@ -1,4 +1,4 @@
-from ..models import Product, ProductSubType
+from products.models import Product, ProductSubType
 from django.db.models import Subquery, QuerySet
 from django.http.request import QueryDict
 

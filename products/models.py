@@ -118,7 +118,6 @@ class Size(models.Model):
 class Product(models.Model):
     name = models.CharField(
         max_length=255,
-        unique=True,
     )
     description = models.TextField(
         null=True,
@@ -135,6 +134,7 @@ class Product(models.Model):
     brand = models.ForeignKey(
         Brand,
         on_delete=models.CASCADE,
+        db_index=True,
     )
     vendor_code = models.CharField(max_length=9)
     amount = models.PositiveIntegerField()
@@ -144,7 +144,12 @@ class Product(models.Model):
         blank=True,
     )
     price = models.DecimalField(
-        max_digits=10, decimal_places=2, validators=[validate_positive_number]
+        max_digits=10,
+        decimal_places=2,
+        validators=[
+            validate_positive_number,
+        ],
+        db_index=True,
     )
     season = models.CharField(
         max_length=50,
@@ -159,6 +164,7 @@ class Product(models.Model):
     color = models.ForeignKey(
         Color,
         on_delete=models.CASCADE,
+        db_index=True,
     )
     manufacturerCountry = models.ForeignKey(
         ManufacturerCountry,

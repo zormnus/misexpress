@@ -4,10 +4,10 @@ from .models import Product
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from .services import products_filter_service
+from .services import products_filters
 
 
-@extend_schema(tags=["Products"])
+@extend_schema(tags=["products"])
 @extend_schema_view(
     create=extend_schema(
         summary="Create product endpoint",
@@ -34,7 +34,7 @@ class ProductsAdminViewSet(
     lookup_field = "slug"
 
 
-@extend_schema(tags=["Products"])
+@extend_schema(tags=["products"])
 @extend_schema_view(
     list=extend_schema(
         summary="Get all products endpoint",
@@ -91,19 +91,24 @@ class ProductsClientViewSet(
 
     def get_queryset(self):
         request_data = self.request.GET
-        self.queryset = products_filter_service.apply_categories_filter(
-            request_data, self.queryset
+        self.queryset = products_filters.apply_categories_filter(
+            request_data,
+            self.queryset,
         )
-        self.queryset = products_filter_service.apply_color_filter(
-            request_data, self.queryset
+        self.queryset = products_filters.apply_color_filter(
+            request_data,
+            self.queryset,
         )
-        self.queryset = products_filter_service.apply_size_filter(
-            request_data, self.queryset
+        self.queryset = products_filters.apply_size_filter(
+            request_data,
+            self.queryset,
         )
-        self.queryset = products_filter_service.apply_price_filter(
-            request_data, self.queryset
+        self.queryset = products_filters.apply_price_filter(
+            request_data,
+            self.queryset,
         )
-        self.queryset = products_filter_service.apply_brands_filter(
-            request_data, self.queryset
+        self.queryset = products_filters.apply_brands_filter(
+            request_data,
+            self.queryset,
         )
         return super().get_queryset()
