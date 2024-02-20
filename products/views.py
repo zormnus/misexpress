@@ -1,7 +1,13 @@
 from rest_framework import viewsets, mixins
-from .serializers import ProductUpdateSerializer, ProductSerializer
-from .models import Product
-from rest_framework.permissions import IsAdminUser, IsAuthenticated
+from .serializers import (
+    ProductUpdateSerializer,
+    ProductSerializer,
+    ProductCategoriesSerializer,
+    ProductTypeSerializer,
+    ProductSubTypeSerializer,
+)
+from .models import Product, Category, ProductType, ProductSubType
+from rest_framework.permissions import IsAdminUser
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from .services import products_filters
@@ -30,7 +36,7 @@ class ProductsAdminViewSet(
 ):
     queryset = Product.objects.all()
     serializer_class = ProductUpdateSerializer
-    permission_classes = [IsAdminUser, IsAuthenticated]
+    permission_classes = [IsAdminUser]
     lookup_field = "slug"
 
 
@@ -112,3 +118,81 @@ class ProductsClientViewSet(
             self.queryset,
         )
         return super().get_queryset()
+
+
+@extend_schema(tags=["categories"])
+@extend_schema_view(
+    create=extend_schema(
+        summary="Create product category endpoint",
+    ),
+    destroy=extend_schema(
+        summary="Delete product category endpoint",
+    ),
+    update=extend_schema(
+        summary="Update product category endpoint",
+    ),
+    partial_update=extend_schema(
+        summary="Partial update product category endpoint",
+    ),
+)
+class ProductCategoriesViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = Category.objects.all()
+    permission_classes = [IsAdminUser]
+    serializer_class = ProductCategoriesSerializer
+
+
+@extend_schema(tags=["types"])
+@extend_schema_view(
+    create=extend_schema(
+        summary="Create product type endpoint",
+    ),
+    destroy=extend_schema(
+        summary="Delete product type endpoint",
+    ),
+    update=extend_schema(
+        summary="Update product type endpoint",
+    ),
+    partial_update=extend_schema(
+        summary="Partial update product type endpoint",
+    ),
+)
+class ProductTypesViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = ProductType.objects.all()
+    permission_classes = [IsAdminUser]
+    serializer_class = ProductTypeSerializer
+
+
+@extend_schema(tags=["subtypes"])
+@extend_schema_view(
+    create=extend_schema(
+        summary="Create product subtype endpoint",
+    ),
+    destroy=extend_schema(
+        summary="Delete product subtype endpoint",
+    ),
+    update=extend_schema(
+        summary="Update product subtype endpoint",
+    ),
+    partial_update=extend_schema(
+        summary="Partial update product subtype endpoint",
+    ),
+)
+class ProductSubTypesViewSet(
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = ProductSubType.objects.all()
+    permission_classes = [IsAdminUser]
+    serializer_class = ProductSubTypeSerializer

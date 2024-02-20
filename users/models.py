@@ -3,21 +3,6 @@ from django.contrib.auth.models import AbstractUser
 from products.models import Product
 
 
-class PaymentMethod(models.Model):
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-    )
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = "Payment method"
-        verbose_name_plural = "Payment methods"
-        ordering = ["-name"]
-
-
 class OrderStatus(models.Model):
     name = models.CharField(
         max_length=255,
@@ -39,12 +24,16 @@ class User(AbstractUser):
         unique=True,
         blank=True,
     )
+    favorites = models.ManyToManyField(
+        Product,
+    )
 
     def __str__(self) -> str:
         return f"User {self.username}"
 
 
 class Review(models.Model):
+    text = models.TextField()
     user = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -56,35 +45,31 @@ class Review(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"Review {self.pk} by user {self.user}"
-
-
-class Favorites(models.Model):
-    product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-    )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self) -> str:
-        return f"Favorite product {self.product} for user {self.user}"
-
-    class Meta:
-        verbose_name = "Favorites"
-        verbose_name_plural = "Favorites"
+        return f"Review {self.pk} on {self.product.name} by user {self.user.username}"
 
 
 class Order(models.Model):
+    BANK_TRANSFER = "BT"
+    BY_CARD = "BC"
+    BILLING = "BG"
+    BY_CRYPTOCURRENCY = "CR"
+    BY_PAYPAL = "PP"
+
     address = models.CharField(
         max_length=1024,
     )
-    payment_method = models.ForeignKey(
-        PaymentMethod,
-        on_delete=models.SET_NULL,
+    PAYMENT_METHODS = [
+        (BANK_TRANSFER, "Bank Transfer"),
+        (BY_CARD, "By card"),
+        (BILLING, "By billing"),
+        (BY_CRYPTOCURRENCY, "By cryptocurrency"),
+        (BY_PAYPAL, "By PayPal service"),
+    ]
+    payment_method = models.CharField(
+        max_length=50,
+        choices=PAYMENT_METHODS,
         null=True,
+        blank=True,
     )
     status = models.ForeignKey(
         OrderStatus,
