@@ -19,6 +19,8 @@ from users.views import (
     TokenObtainPairViewDoc,
     TokenRefreshViewDoc,
     TokenVerifyViewDoc,
+    ReviewsProcessViewSet,
+    ReviewsViewSet,
 )
 
 
@@ -29,6 +31,8 @@ router.register(r"catalog", ProductsClientViewSet)
 router.register(r"categories", ProductCategoriesViewSet)
 router.register(r"types", ProductTypesViewSet)
 router.register(r"subtypes", ProductSubTypesViewSet)
+router.register(r"reviews-proc", ReviewsProcessViewSet)
+router.register(r"reviews", ReviewsViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

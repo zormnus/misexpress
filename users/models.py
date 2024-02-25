@@ -1,21 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from products.models import Product
-
-
-class OrderStatus(models.Model):
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-    )
-
-    def __str__(self) -> str:
-        return self.name
-
-    class Meta:
-        verbose_name = "Order status"
-        verbose_name_plural = "Order statuses"
-        ordering = ["-name"]
+from django.db.models import UniqueConstraint
 
 
 class User(AbstractUser):
@@ -44,6 +30,11 @@ class Review(models.Model):
         on_delete=models.CASCADE,
     )
 
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=["user", "product"], name="unique_user_product"),
+        ]
+
     def __str__(self) -> str:
         return f"Review {self.pk} on {self.product.name} by user {self.user.username}"
 
@@ -55,9 +46,6 @@ class Order(models.Model):
     BY_CRYPTOCURRENCY = "CR"
     BY_PAYPAL = "PP"
 
-    address = models.CharField(
-        max_length=1024,
-    )
     PAYMENT_METHODS = [
         (BANK_TRANSFER, "Bank Transfer"),
         (BY_CARD, "By card"),
@@ -65,16 +53,39 @@ class Order(models.Model):
         (BY_CRYPTOCURRENCY, "By cryptocurrency"),
         (BY_PAYPAL, "By PayPal service"),
     ]
+
+    CREATED = "CR"
+    PROCESSED = "PR"
+    COLLECTED = "CD"
+    FINISHED = "FD"
+
+    ORDER_STATUSES = [
+        (CREATED, "Created"),
+        (PROCESSED, "Processed"),
+        (COLLECTED, "Collected"),
+        (FINISHED, "Finished"),
+    ]
+
+    address = models.CharField(
+        max_length=1024,
+        null=True,
+        blank=True,
+    )
+
     payment_method = models.CharField(
         max_length=50,
         choices=PAYMENT_METHODS,
         null=True,
         blank=True,
     )
-    status = models.ForeignKey(
-        OrderStatus,
-        on_delete=models.CASCADE,
+
+    status = models.CharField(
+        max_length=50,
+        choices=ORDER_STATUSES,
+        null=True,
+        blank=True,
     )
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
