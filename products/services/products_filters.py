@@ -1,25 +1,11 @@
-from products.models import Product, ProductSubType
-from django.db.models import Subquery, QuerySet
+from django.db.models import QuerySet
 from django.http.request import QueryDict
 
 
 def apply_categories_filter(request_data: QueryDict, queryset: QuerySet) -> QuerySet:
     categories = request_data.getlist("cats", None)
     if categories:
-        correct_products = (
-            Product.objects.prefetch_related("subType")
-            .filter(
-                subType__type__category__in=Subquery(
-                    ProductSubType.objects.select_related("type__category")
-                    .filter(type__category__name__in=categories)
-                    .values("type__category")
-                ),
-            )
-            .values("name")
-            .distinct()
-        )
-        correct_products_names = [item["name"] for item in correct_products]
-        return queryset.filter(name__in=correct_products_names)
+        return queryset.filter(subTypes__type__category__name__in=categories)
     return queryset
 
 

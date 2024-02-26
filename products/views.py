@@ -52,7 +52,9 @@ class ProductsAdminViewSet(
 class ProductsClientViewSet(
     mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
-    queryset = Product.objects.all()
+    queryset = Product.objects.select_related(
+        "brand", "color", "manufacturerCountry", "size"
+    ).prefetch_related("subTypes")
     serializer_class = ProductSerializer
     lookup_field = "slug"
 

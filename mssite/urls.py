@@ -21,6 +21,7 @@ from users.views import (
     TokenVerifyViewDoc,
     ReviewsProcessViewSet,
     ReviewsViewSet,
+    UserCreateViewSet,
 )
 
 
@@ -33,10 +34,12 @@ router.register(r"types", ProductTypesViewSet)
 router.register(r"subtypes", ProductSubTypesViewSet)
 router.register(r"reviews-proc", ReviewsProcessViewSet)
 router.register(r"reviews", ReviewsViewSet)
+router.register(r"users/reg", UserCreateViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include(router.urls)),
+    path("__debug__/", include("debug_toolbar.urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/schema/swagger-ui/",

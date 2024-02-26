@@ -12,6 +12,7 @@ class User(AbstractUser):
     )
     favorites = models.ManyToManyField(
         Product,
+        blank=True,
     )
 
     def __str__(self) -> str:

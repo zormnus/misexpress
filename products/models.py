@@ -128,7 +128,7 @@ class Product(models.Model):
         null=True,
         blank=True,
     )
-    subType = models.ManyToManyField(
+    subTypes = models.ManyToManyField(
         ProductSubType,
     )
     brand = models.ForeignKey(

@@ -6,9 +6,9 @@ from rest_framework_simplejwt.views import (
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins
-from .models import Review
+from .models import Review, User
 from .permissions import IsOwnerOrAdminUserReviewPermission
-from .serializers import ReviewSerializer, LightReviewSerializer
+from .serializers import ReviewSerializer, LightReviewSerializer, CustomerUserLoginSerializer
 from .services import reviews_filters
 
 from django.db.utils import IntegrityError
@@ -79,7 +79,7 @@ class ReviewsProcessViewSet(
         try:
             return super().create(request, *args, **kwargs)
         except IntegrityError:
-            return HttpResponse(status=403, content="That review is already created")
+            return HttpResponse(status=400, content="That review is already created")
 
 
 @extend_schema(tags=["reviews"])
@@ -114,3 +114,14 @@ class ReviewsViewSet(
             self.queryset = filter_result
             return super().get_queryset()
         return Review.objects.none()
+
+
+@extend_schema(tags=["users"])
+@extend_schema_view(
+    create=extend_schema(
+        summary="Create user endpoint",
+    )
+)
+class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+    queryset = User.objects.all()
+    serializer_class = CustomerUserLoginSerializer

@@ -32,6 +32,6 @@ def generate_products(num):
             manufacturerCountry=ManufacturerCountry.objects.order_by("?").first(),
         )
         product.save()
-        product.subType.add(
+        product.subTypes.add(
             *ProductSubType.objects.order_by("?")[: random.randint(1, 3)]
         )
