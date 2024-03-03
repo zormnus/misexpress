@@ -37,7 +37,7 @@ class Review(models.Model):
         ]
 
     def __str__(self) -> str:
-        return f"Review {self.pk} on {self.product.name} by user {self.user.username}"
+        return f"Review {self.pk} on {self.product.pk} by user {self.user.username}"
 
 
 class Order(models.Model):

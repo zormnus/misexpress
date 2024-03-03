@@ -1,6 +1,5 @@
 from .models import Product, Category, ProductType, ProductSubType
 from rest_framework.serializers import ModelSerializer
-from rest_framework import serializers
 
 
 class ProductUpdateSerializer(ModelSerializer):
@@ -11,15 +10,11 @@ class ProductUpdateSerializer(ModelSerializer):
 
 
 class ProductSerializer(ModelSerializer):
-    subtype_names = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         lookup_field = "slug"
         exclude = ("subTypes",)
-
-    def get_subtype_names(self, obj):
-        return [subtype.name for subtype in obj.subTypes.all()]
 
 
 class ProductCategoriesSerializer(ModelSerializer):
