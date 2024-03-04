@@ -35,6 +35,7 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/nginx.conf
       - static_data:/var/www/api/static/
+    restart: always
 volumes:
   pg_data:
   static_data:
