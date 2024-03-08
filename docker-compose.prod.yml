@@ -10,11 +10,11 @@ services:
       - pg_data:/var/lib/postgresql/data
     restart: always
 
-  me-app:
+  me-backend-app:
     build:
       context: .
       dockerfile: Dockerfile.prod
-    container_name: me-app
+    container_name: me-backend-app
     env_file: .env
     depends_on:
       - me-postgres
@@ -26,12 +26,26 @@ services:
       - '8000:8000'
     restart: always
 
+  me-client-app:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+    container_name: me-client-app
+    depends_on:
+      - me-backend-app
+    command: sh -c "npx serve@latest out"
+    ports:
+      - '3000:3000'
+    restart: always
+
   nginx:
     image: nginx:latest
     depends_on:
-      - me-app
+      - me-backend-app
+      - me-client-app
     ports:
       - '80:80'
+      - '8800:8800'
     volumes:
       - ./nginx/default.conf:/etc/nginx/nginx.conf
       - static_data:/var/www/api/static/
