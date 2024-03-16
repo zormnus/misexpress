@@ -1,6 +1,7 @@
 from django.db import models
 from slugify import slugify
 from .validators import validate_positive_number
+from django.db.models import UniqueConstraint
 
 
 class Color(models.Model):
@@ -15,7 +16,7 @@ class Color(models.Model):
         ordering = ["-name"]
 
     def __str__(self) -> str:
-        return self.name
+        return f"{self.name} цвет"
 
 
 class Brand(models.Model):
@@ -40,7 +41,7 @@ class Category(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.name
+        return f"Категория: {self.name}"
 
     class Meta:
         verbose_name = "Product category"
@@ -51,7 +52,6 @@ class Category(models.Model):
 class ProductType(models.Model):
     name = models.CharField(
         max_length=255,
-        unique=True,
     )
     category = models.ForeignKey(
         Category,
@@ -59,18 +59,22 @@ class ProductType(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.name
+        return f"Тип: {self.name} [Категория: {self.category.name}]"
 
     class Meta:
         verbose_name = "Product type"
         verbose_name_plural = "Product types"
         ordering = ["-name"]
+        constraints = [
+            UniqueConstraint(
+                fields=["name", "category"], name="unique_typename_category"
+            ),
+        ]
 
 
 class ProductSubType(models.Model):
     name = models.CharField(
         max_length=255,
-        unique=True,
     )
     type = models.ForeignKey(
         ProductType,
@@ -78,12 +82,16 @@ class ProductSubType(models.Model):
     )
 
     def __str__(self) -> str:
-        return self.name
+        return f"Подкатегория: {self.name} [Тип: {self.type.name}]"
 
     class Meta:
         verbose_name = "Product subtype"
         verbose_name_plural = "Product subtypes"
         ordering = ["-name"]
+
+        constraints = [
+            UniqueConstraint(fields=["name", "type"], name="unique_subtypename_type"),
+        ]
 
 
 class ManufacturerCountry(models.Model):
