@@ -198,7 +198,7 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800"]
+CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800", "http://localhost:3000"]
 
 # if DEBUG:
 #     LOGGING = {
