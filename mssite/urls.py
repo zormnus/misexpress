@@ -3,8 +3,7 @@ from django.contrib import admin
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 from products.views import (
-    ProductsAdminViewSet,
-    ProductsClientViewSet,
+    ProductsViewSet,
     ProductCategoriesViewSet,
     ProductTypesViewSet,
     ProductSubTypesViewSet,
@@ -27,8 +26,7 @@ from users.views import (
 
 router = DefaultRouter()
 
-router.register(r"products", ProductsAdminViewSet)
-router.register(r"catalog", ProductsClientViewSet)
+router.register(r"catalog", ProductsViewSet)
 router.register(r"categories", ProductCategoriesViewSet)
 router.register(r"types", ProductTypesViewSet)
 router.register(r"subtypes", ProductSubTypesViewSet)

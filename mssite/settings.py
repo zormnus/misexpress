@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "products",
     "users",
     "debug_toolbar",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
 ]
 
 ROOT_URLCONF = "mssite.urls"
@@ -199,6 +202,13 @@ SIMPLE_JWT = {
 }
 
 CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800", "http://localhost:3000"]
+
+
+# CORS
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3030",
+]
 
 # if DEBUG:
 #     LOGGING = {
