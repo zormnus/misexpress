@@ -7,7 +7,7 @@ from .serializers import (
     ProductSubTypeSerializer,
 )
 from .models import Product, Category, ProductType, ProductSubType
-from rest_framework.permissions import IsAdminUser
+from .permissions import IsAdminUserOrReadOnly
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from .services import products_filters
@@ -15,6 +15,12 @@ from .services import products_filters
 
 @extend_schema(tags=["products"])
 @extend_schema_view(
+    list=extend_schema(
+        summary="Get all products endpoint",
+    ),
+    retrieve=extend_schema(
+        summary="Get product by its slug endpoint",
+    ),
     create=extend_schema(
         summary="Create product endpoint",
     ),
@@ -28,29 +34,12 @@ from .services import products_filters
         summary="Partial update product endpoint",
     ),
 )
-class ProductsAdminViewSet(
+class ProductsViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
     viewsets.GenericViewSet,
-):
-    queryset = Product.objects.all()
-    serializer_class = ProductUpdateSerializer
-    permission_classes = [IsAdminUser]
-    lookup_field = "slug"
-
-
-@extend_schema(tags=["products"])
-@extend_schema_view(
-    list=extend_schema(
-        summary="Get all products endpoint",
-    ),
-    retrieve=extend_schema(
-        summary="Get product by its slug endpoint",
-    ),
-)
-class ProductsClientViewSet(
-    mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet
 ):
     queryset = Product.objects.select_related(
         "brand", "color", "manufacturerCountry", "size"
@@ -124,6 +113,9 @@ class ProductsClientViewSet(
 
 @extend_schema(tags=["categories"])
 @extend_schema_view(
+    list=extend_schema(
+        summary="Get all products categories endpoint",
+    ),
     create=extend_schema(
         summary="Create product category endpoint",
     ),
@@ -138,18 +130,22 @@ class ProductsClientViewSet(
     ),
 )
 class ProductCategoriesViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = Category.objects.all()
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductCategoriesSerializer
 
 
 @extend_schema(tags=["types"])
 @extend_schema_view(
+    list=extend_schema(
+        summary="Get all products types endpoint",
+    ),
     create=extend_schema(
         summary="Create product type endpoint",
     ),
@@ -164,18 +160,22 @@ class ProductCategoriesViewSet(
     ),
 )
 class ProductTypesViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = ProductType.objects.all()
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductTypeSerializer
 
 
 @extend_schema(tags=["subtypes"])
 @extend_schema_view(
+    list=extend_schema(
+        summary="Get all products subtypes endpoint",
+    ),
     create=extend_schema(
         summary="Create product subtype endpoint",
     ),
@@ -190,11 +190,12 @@ class ProductTypesViewSet(
     ),
 )
 class ProductSubTypesViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
     queryset = ProductSubType.objects.all()
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductSubTypeSerializer
