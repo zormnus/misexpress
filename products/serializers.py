@@ -14,7 +14,7 @@ class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         lookup_field = "slug"
-        exclude = ("subTypes",)
+        fields = "__all__"
 
 
 class ProductCategoriesSerializer(ModelSerializer):
