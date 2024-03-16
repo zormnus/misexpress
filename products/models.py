@@ -189,7 +189,7 @@ class Product(models.Model):
         on_delete=models.CASCADE,
     )
     slug = models.SlugField(
-        max_length=255,
+        max_length=1024,
         unique=True,
         db_index=True,
         blank=True,
