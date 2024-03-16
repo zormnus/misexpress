@@ -142,6 +142,8 @@ AUTH_USER_MODEL = "users.User"
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
+# Media files (Database storage images, videos etc.)
+
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
 

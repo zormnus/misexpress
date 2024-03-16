@@ -1,6 +1,5 @@
 from rest_framework import viewsets, mixins
 from .serializers import (
-    ProductUpdateSerializer,
     ProductSerializer,
     ProductCategoriesSerializer,
     ProductTypeSerializer,
