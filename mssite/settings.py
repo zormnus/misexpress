@@ -201,14 +201,13 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800", "http://localhost:3000"]
+CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800"]
 
 
 # CORS
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3030",
-]
+# Frontend local develop
+CORS_ORIGIN_ALLOW_ALL = True
 
 # if DEBUG:
 #     LOGGING = {
