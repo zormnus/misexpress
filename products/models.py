@@ -123,6 +123,10 @@ class Size(models.Model):
         verbose_name_plural = "Product sizes"
 
 
+def upload_to(instance, filename):
+    return "/".join(["images", str(instance.name), filename])
+
+
 class Product(models.Model):
     name = models.CharField(
         max_length=255,
@@ -132,7 +136,7 @@ class Product(models.Model):
         blank=True,
     )
     image = models.ImageField(
-        upload_to="products/images/",
+        upload_to=upload_to,
         null=True,
         blank=True,
     )
