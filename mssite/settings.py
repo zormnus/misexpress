@@ -213,9 +213,7 @@ CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800"]
 
 # CORS
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3030",
-# ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Logs settings
