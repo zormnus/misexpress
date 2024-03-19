@@ -92,6 +92,9 @@ class Order(models.Model):
         on_delete=models.CASCADE,
     )
 
+    def __str__(self) -> str:
+        return f"Заказ: {self.pk} состояние {self.status} (вледелец: {self.user})"
+
     class Meta:
         verbose_name = "Order"
         verbose_name_plural = "Orders"

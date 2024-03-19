@@ -164,3 +164,4 @@ cython_debug/
 .vscode/
 rebuild.sh
 media/
+logs/

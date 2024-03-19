@@ -36,6 +36,11 @@ SECRET_KEY = env("SECRET_KEY")
 DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = ["*"]
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 
 # Application definition
 
@@ -67,6 +72,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "mssite.middleware.Process500Error",
 ]
 
 ROOT_URLCONF = "mssite.urls"
@@ -101,6 +107,7 @@ DATABASES = {
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
         "HOST": env("POSTGRES_HOST", default="localhost"),
         "PORT": env("POSTGRES_PORT", cast=int, default=5432),
+        "ATOMIC_REQUESTS": True,
     }
 }
 
@@ -213,20 +220,40 @@ SIMPLE_JWT = {
 #     "http://localhost:3030",
 # ]
 
-# if DEBUG:
-#     LOGGING = {
-#         "version": 1,
-#         "handlers": {
-#             "console": {
-#                 "class": "logging.StreamHandler",
-#             },
-#         },
-#         "loggers": {
-#             "django.db.backends": {
-#                 "level": "DEBUG",
-#             },
-#         },
-#         "root": {
-#             "handlers": ["console"],
-#         },
-#     }
+
+# Logs settings
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default_formatter": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/logs.log"),
+            "formatter": "default_formatter",
+        },
+    },
+    "loggers": {
+        "mssite": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+        "products": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+        "users": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+    },
+}

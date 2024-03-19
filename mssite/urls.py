@@ -21,6 +21,7 @@ from users.views import (
     ReviewsProcessViewSet,
     ReviewsViewSet,
     UserCreateViewSet,
+    CartViewSet,
 )
 
 
@@ -32,7 +33,8 @@ router.register(r"types", ProductTypesViewSet)
 router.register(r"subtypes", ProductSubTypesViewSet)
 router.register(r"reviews-proc", ReviewsProcessViewSet)
 router.register(r"reviews", ReviewsViewSet)
-router.register(r"users/reg", UserCreateViewSet)
+router.register(r"users/signup", UserCreateViewSet)
+router.register(r"cart", CartViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),

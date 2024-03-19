@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from .models import Review, User
+from .models import Review, User, OrderProduct
 
 
 class ReviewSerializer(ModelSerializer):
@@ -15,7 +15,7 @@ class LightReviewSerializer(ModelSerializer):
 
 
 class BaseUserConfig:
-    def base_user_save(self, validated_data):
+    def user_save(self, validated_data):
         user = User(**validated_data)
         password = validated_data.pop("password")
         user.set_password(password)
@@ -37,7 +37,7 @@ class CustomerUserLoginSerializer(ModelSerializer, BaseUserConfig):
         )
 
     def create(self, validated_data):
-        return super().base_user_save(validated_data)
+        return super().user_save(validated_data)
 
 
 class StaffUserLoginSerializer(ModelSerializer, BaseUserConfig):
@@ -49,4 +49,10 @@ class StaffUserLoginSerializer(ModelSerializer, BaseUserConfig):
         )
 
     def create(self, validated_data):
-        return super().base_user_save(validated_data)
+        return super().user_save(validated_data)
+
+
+class CartProductSerializer(ModelSerializer):
+    class Meta:
+        model = OrderProduct
+        fields = "__all__"
