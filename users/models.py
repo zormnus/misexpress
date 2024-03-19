@@ -1,7 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from products.models import Product
-from django.db.models import UniqueConstraint
 
 
 class User(AbstractUser):
@@ -32,9 +31,7 @@ class Review(models.Model):
     )
 
     class Meta:
-        constraints = [
-            UniqueConstraint(fields=["user", "product"], name="unique_user_product"),
-        ]
+        unique_together = ("user", "product")
 
     def __str__(self) -> str:
         return f"Review {self.pk} on {self.product.pk} by user {self.user.username}"

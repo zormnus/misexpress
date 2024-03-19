@@ -1,7 +1,6 @@
 from django.db import models
 from slugify import slugify
 from .validators import validate_positive_number
-from django.db.models import UniqueConstraint
 
 
 class Color(models.Model):
@@ -65,11 +64,7 @@ class ProductType(models.Model):
         verbose_name = "Product type"
         verbose_name_plural = "Product types"
         ordering = ["-name"]
-        constraints = [
-            UniqueConstraint(
-                fields=["name", "category"], name="unique_typename_category"
-            ),
-        ]
+        unique_together = ("name", "category")
 
 
 class ProductSubType(models.Model):
@@ -88,10 +83,7 @@ class ProductSubType(models.Model):
         verbose_name = "Product subtype"
         verbose_name_plural = "Product subtypes"
         ordering = ["-name"]
-
-        constraints = [
-            UniqueConstraint(fields=["name", "type"], name="unique_subtypename_type"),
-        ]
+        unique_together = ("name", "type")
 
 
 class ManufacturerCountry(models.Model):
