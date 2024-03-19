@@ -67,6 +67,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "mssite.middleware.Process500Error",
 ]
 
 ROOT_URLCONF = "mssite.urls"
@@ -101,6 +102,7 @@ DATABASES = {
         "PASSWORD": env("POSTGRES_PASSWORD", default=""),
         "HOST": env("POSTGRES_HOST", default="localhost"),
         "PORT": env("POSTGRES_PORT", cast=int, default=5432),
+        "ATOMIC_REQUESTS": True,
     }
 }
 
@@ -141,6 +143,8 @@ AUTH_USER_MODEL = "users.User"
 
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+# Media files (Database storage images, videos etc.)
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
@@ -209,23 +213,44 @@ CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800"]
 
 # CORS
 
-# Frontend local develop
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3030",
+# ]
 
-# if DEBUG:
-#     LOGGING = {
-#         "version": 1,
-#         "handlers": {
-#             "console": {
-#                 "class": "logging.StreamHandler",
-#             },
-#         },
-#         "loggers": {
-#             "django.db.backends": {
-#                 "level": "DEBUG",
-#             },
-#         },
-#         "root": {
-#             "handlers": ["console"],
-#         },
-#     }
+
+# Logs settings
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "default_formatter": {
+            "format": "{levelname} {asctime} {module} {process:d} {thread:d} {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "file": {
+            "level": "WARNING",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/logs.log"),
+            "formatter": "default_formatter",
+        },
+    },
+    "loggers": {
+        "mssite": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+        "products": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+        "users": {
+            "level": "WARNING",
+            "handlers": ["file"],
+            "propogate": True,
+        },
+    },
+}

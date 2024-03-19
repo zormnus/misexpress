@@ -1,3 +1,4 @@
+import logging
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -6,13 +7,23 @@ from rest_framework_simplejwt.views import (
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins
-from .models import Review, User
+from .models import Review, User, OrderProduct
 from .permissions import IsOwnerOrAdminUserReviewPermission
-from .serializers import ReviewSerializer, LightReviewSerializer, CustomerUserLoginSerializer
+from .serializers import (
+    ReviewSerializer,
+    LightReviewSerializer,
+    CustomerUserLoginSerializer,
+    CartProductSerializer,
+)
 from .services import reviews_filters
 
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
+from .services.cart_service import CartService
+from .services.user_service import UserService
+
+
+logger = logging.getLogger(__name__)
 
 
 @extend_schema(tags=["jwt auth"])
@@ -88,7 +99,7 @@ class ReviewsProcessViewSet(
         summary="Get all reviews of product endpoint",
         parameters=[
             OpenApiParameter(
-                name="pid",
+                name="product_id",
                 description="Reviews filtering by product id",
                 type=OpenApiTypes.INT,
                 required=True,
@@ -116,7 +127,7 @@ class ReviewsViewSet(
         return Review.objects.none()
 
 
-@extend_schema(tags=["users"])
+@extend_schema(tags=["signup"])
 @extend_schema_view(
     create=extend_schema(
         summary="Create user endpoint",
@@ -125,3 +136,51 @@ class ReviewsViewSet(
 class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all()
     serializer_class = CustomerUserLoginSerializer
+
+    def create(self, request, *args, **kwargs):
+        user_data = request.data
+        response = super().create(request, *args, **kwargs)
+        created_user = UserService.get_user_by_username(username=user_data["username"])
+        CartService.create_empty_cart(user=created_user)
+        return response
+
+
+@extend_schema(tags=["cart"])
+@extend_schema_view(
+    create=extend_schema(
+        summary="Add product to cart endpoint",
+    ),
+    destroy=extend_schema(
+        summary="Delete product from cart endpoint",
+    ),
+    list=extend_schema(
+        summary="Get cart of user endpoint",
+        parameters=[
+            OpenApiParameter(
+                name="user_id",
+                description="Cart owner id",
+                type=OpenApiTypes.DECIMAL,
+                required=True,
+            ),
+        ],
+    ),
+)
+class CartViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = OrderProduct.objects.select_related("order", "product")
+    serializer_class = CartProductSerializer
+
+    def list(self, request, *args, **kwargs):
+        user_id = request.GET
+        filter_results = CartService.get_user_cart(
+            request_data=user_id,
+            queryset=self.queryset,
+        )
+        if filter_results is not None:
+            self.queryset = filter_results
+            return super().list(request, *args, **kwargs)
+        return HttpResponse(status=400, content="User id is required")
