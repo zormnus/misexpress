@@ -137,7 +137,6 @@ class Product(models.Model):
     )
     image = models.ImageField(
         upload_to=upload_to,
-        upload_to=upload_to,
         null=True,
         blank=True,
     )
