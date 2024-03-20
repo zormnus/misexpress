@@ -18,7 +18,7 @@ from .serializers import (
     CustomerUserLoginSerializer,
     CartProductSerializer,
 )
-from .services import reviews_filters
+from .services import reviews_service
 
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -120,7 +120,7 @@ class ReviewsViewSet(
 
     def get_queryset(self):
         request_data = self.request.GET
-        filter_result = reviews_filters.apply_product_reviews_filter(
+        filter_result = reviews_service.apply_product_reviews_filter(
             request_data,
             self.queryset,
         )
