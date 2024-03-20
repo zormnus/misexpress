@@ -45,6 +45,7 @@ class ProductsViewSet(
         "brand", "color", "manufacturerCountry", "size"
     ).prefetch_related("subTypes")
     serializer_class = ProductSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
     lookup_field = "slug"
 
     @extend_schema(
