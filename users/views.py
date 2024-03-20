@@ -8,7 +8,10 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins
 from .models import Review, User, OrderProduct
-from .permissions import IsOwnerOrAdminUserReviewPermission
+from .permissions import (
+    IsOwnerOrAdminUserReviewPermission,
+    IsOwnerOrAdminCartProductPermission,
+)
 from .serializers import (
     ReviewSerializer,
     LightReviewSerializer,
@@ -173,6 +176,7 @@ class CartViewSet(
 ):
     queryset = OrderProduct.objects.select_related("order", "product")
     serializer_class = CartProductSerializer
+    permission_classes = [IsOwnerOrAdminCartProductPermission]
 
     def list(self, request, *args, **kwargs):
         user_id = request.GET
