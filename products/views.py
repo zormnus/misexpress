@@ -9,7 +9,7 @@ from .models import Product, Category, ProductType, ProductSubType
 from .permissions import IsAdminUserOrReadOnly
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from .services import products_filters
+from .services.products_filters import ProductsService
 
 
 @extend_schema(tags=["products"])
@@ -19,35 +19,6 @@ from .services import products_filters
     ),
     retrieve=extend_schema(
         summary="Get product by its slug endpoint",
-    ),
-    create=extend_schema(
-        summary="Create product endpoint",
-    ),
-    destroy=extend_schema(
-        summary="Destroy product endpoint",
-    ),
-    update=extend_schema(
-        summary="Update product endpoint",
-    ),
-    partial_update=extend_schema(
-        summary="Partial update product endpoint",
-    ),
-)
-class ProductsViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.UpdateModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet,
-):
-    queryset = Product.objects.select_related(
-        "brand", "color", "manufacturerCountry", "size"
-    ).prefetch_related("subTypes")
-    serializer_class = ProductSerializer
-    lookup_field = "slug"
-
-    @extend_schema(
         parameters=[
             OpenApiParameter(
                 name="cats",
@@ -81,30 +52,55 @@ class ProductsViewSet(
                 many=True,
                 type=OpenApiTypes.STR,
             ),
-        ]
-    )
-    def list(self, request, *args, **kwargs):
-        return super().list(request, *args, **kwargs)
+        ],
+    ),
+    create=extend_schema(
+        summary="Create product endpoint",
+    ),
+    destroy=extend_schema(
+        summary="Destroy product endpoint",
+    ),
+    update=extend_schema(
+        summary="Update product endpoint",
+    ),
+    partial_update=extend_schema(
+        summary="Partial update product endpoint",
+    ),
+)
+class ProductsViewSet(
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    mixins.UpdateModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.DestroyModelMixin,
+    viewsets.GenericViewSet,
+):
+    queryset = Product.objects.select_related(
+        "brand", "color", "manufacturerCountry", "size"
+    ).prefetch_related("subTypes")
+    serializer_class = ProductSerializer
+    permission_classes = [IsAdminUserOrReadOnly]
+    lookup_field = "slug"
 
     def get_queryset(self):
         request_data = self.request.GET
-        self.queryset = products_filters.apply_categories_filter(
+        self.queryset = ProductsService.apply_categories_filter(
             request_data,
             self.queryset,
         )
-        self.queryset = products_filters.apply_color_filter(
+        self.queryset = ProductsService.apply_color_filter(
             request_data,
             self.queryset,
         )
-        self.queryset = products_filters.apply_size_filter(
+        self.queryset = ProductsService.apply_size_filter(
             request_data,
             self.queryset,
         )
-        self.queryset = products_filters.apply_price_filter(
+        self.queryset = ProductsService.apply_price_filter(
             request_data,
             self.queryset,
         )
-        self.queryset = products_filters.apply_brands_filter(
+        self.queryset = ProductsService.apply_brands_filter(
             request_data,
             self.queryset,
         )
