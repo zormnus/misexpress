@@ -21,6 +21,7 @@ services:
     volumes:
       - .:/app
       - static_data:/app/static
+      - media_data:/app/media
     command: sh -c "./entrypoint.sh"
     ports:
       - '8000:8000'
@@ -49,7 +50,9 @@ services:
     volumes:
       - ./nginx/default.conf:/etc/nginx/nginx.conf
       - static_data:/var/www/api/static/
+      - media_data:/var/www/api/media/
     restart: always
 volumes:
   pg_data:
   static_data:
+  media_data:

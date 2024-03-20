@@ -35,12 +35,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["*"]
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
+ALLOWED_HOSTS = ["mis-express.com"]
 
 # Application definition
 
@@ -213,12 +208,12 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
+CSRF_TRUSTED_ORIGINS = ["http://mis-express.com", "http://mis-express.com:8800"]
+
 
 # CORS
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3030",
-# ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Logs settings
