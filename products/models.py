@@ -77,7 +77,7 @@ class ProductSubType(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"Подкатегория: {self.name} [Тип: {self.type.name}]"
+        return f"Подкатегория: {self.name} [Тип: {self.type.name} Категория: {self.type.category.name}]"
 
     class Meta:
         verbose_name = "Product subtype"
