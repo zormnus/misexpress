@@ -85,6 +85,7 @@ class TokenVerifyViewDoc(TokenVerifyView):
     ),
 )
 class ReviewsViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
