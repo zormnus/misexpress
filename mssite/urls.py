@@ -18,7 +18,6 @@ from users.views import (
     TokenObtainPairViewDoc,
     TokenRefreshViewDoc,
     TokenVerifyViewDoc,
-    ReviewsProcessViewSet,
     ReviewsViewSet,
     UserCreateViewSet,
     CartViewSet,
@@ -31,7 +30,6 @@ router.register(r"catalog", ProductsViewSet)
 router.register(r"categories", ProductCategoriesViewSet)
 router.register(r"types", ProductTypesViewSet)
 router.register(r"subtypes", ProductSubTypesViewSet)
-router.register(r"reviews-proc", ReviewsProcessViewSet)
 router.register(r"reviews", ReviewsViewSet)
 router.register(r"users/signup", UserCreateViewSet)
 router.register(r"cart", CartViewSet)
