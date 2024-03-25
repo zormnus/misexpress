@@ -2,8 +2,8 @@ from django.contrib import admin
 from .models import (
     Color,
     Brand,
-    SubType,
-    Type,
+    ProductSubType,
+    ProductType,
     Product,
     ManufacturerCountry,
     Category,
@@ -16,8 +16,8 @@ admin.site.index_title = "Welcome to MiSEXPRESS Website Admin Portal"
 
 admin.site.register(Color)
 admin.site.register(Brand)
-admin.site.register(SubType)
-admin.site.register(Type)
+admin.site.register(ProductSubType)
+admin.site.register(ProductType)
 admin.site.register(Product)
 admin.site.register(ManufacturerCountry)
 admin.site.register(Category)
