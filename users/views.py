@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import (
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins
+from rest_framework import status
 from .models import Review, User, OrderProduct
 from .permissions import (
     IsOwnerOrAdminUserReviewPermission,
@@ -93,7 +94,10 @@ class ReviewsProcessViewSet(
         try:
             return super().create(request, *args, **kwargs)
         except IntegrityError:
-            return HttpResponse(status=400, content="That review is already created")
+            return HttpResponse(
+                status=status.HTTP_400_BAD_REQUEST,
+                content="That review is already created",
+            )
 
 
 @extend_schema(tags=["reviews"])
@@ -179,12 +183,14 @@ class CartViewSet(
     permission_classes = [IsOwnerOrAdminCartProductPermission]
 
     def list(self, request, *args, **kwargs):
-        user_id = request.GET
+        request_data = request.GET
         filter_results = CartService.get_user_cart(
-            request_data=user_id,
+            request_data=request_data,
             queryset=self.queryset,
         )
         if filter_results is not None:
             self.queryset = filter_results
             return super().list(request, *args, **kwargs)
-        return HttpResponse(status=400, content="User id is required")
+        return HttpResponse(
+            status=status.HTTP_400_BAD_REQUEST, content="User id is required"
+        )

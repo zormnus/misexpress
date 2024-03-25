@@ -45,3 +45,17 @@ class ProductsService:
         if brands:
             return queryset.filter(brand__name__in=brands)
         return queryset
+
+    @staticmethod
+    def get_category_relations(queryset: QuerySet) -> dict:
+        types_data = {}
+        for product_subtype in queryset:
+            type_name = product_subtype.type.name
+            subtype_name = product_subtype.name
+            if product_subtype.type in types_data:
+                types_data[type_name]["subtypes"].append(subtype_name)
+            else:
+                types_data[type_name] = {
+                    "subtypes": [subtype_name],
+                }
+        return types_data

@@ -5,11 +5,12 @@ from .serializers import (
     ProductTypeSerializer,
     ProductSubTypeSerializer,
 )
-from .models import Product, Category, ProductType, ProductSubType
+from .models import Product, Category, Type, SubType
 from .permissions import IsAdminUserOrReadOnly
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
-from .services.products_filters import ProductsService
+from .services.products_service import ProductsService
+from django.http.response import JsonResponse
 
 
 @extend_schema(tags=["products"])
@@ -127,6 +128,7 @@ class ProductsViewSet(
 )
 class ProductCategoriesViewSet(
     mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
     mixins.CreateModelMixin,
     mixins.UpdateModelMixin,
     mixins.DestroyModelMixin,
@@ -135,6 +137,18 @@ class ProductCategoriesViewSet(
     queryset = Category.objects.all()
     permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductCategoriesSerializer
+
+    def retrieve(self, request, *args, **kwargs):
+        category = self.get_object()
+        queryset = SubType.objects.select_related("type", "type__category").filter(
+            type__category=category
+        )
+        category_relations_data = ProductsService.get_category_relations(queryset)
+        return JsonResponse(
+            data=category_relations_data,
+            safe=False,
+            json_dumps_params={"ensure_ascii": False},
+        )
 
 
 @extend_schema(tags=["types"])
@@ -162,7 +176,7 @@ class ProductTypesViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = ProductType.objects.all()
+    queryset = Type.objects.all()
     permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductTypeSerializer
 
@@ -192,6 +206,6 @@ class ProductSubTypesViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = ProductSubType.objects.all()
+    queryset = SubType.objects.all()
     permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductSubTypeSerializer
