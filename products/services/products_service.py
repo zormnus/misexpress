@@ -52,7 +52,7 @@ class ProductsService:
         for product_subtype in queryset:
             type_name = product_subtype.type.name
             subtype_name = product_subtype.name
-            if product_subtype.type in types_data:
+            if type_name in types_data:
                 types_data[type_name]["subtypes"].append(subtype_name)
             else:
                 types_data[type_name] = {
