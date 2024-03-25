@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class CartService:
+    """Бизнес логика для работы с корзиной"""
     @staticmethod
     def create_empty_cart(user: User) -> None:
         Order.objects.create(status=Order.CREATED, user=user)

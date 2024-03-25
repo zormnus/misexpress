@@ -3,6 +3,8 @@ from django.http.request import QueryDict
 
 
 class ReviewService:
+
+    """Бизнес логика для работы с отзывами"""
     @staticmethod
     def apply_product_reviews_filter(
         request_data: QueryDict, queryset: QuerySet
