@@ -1,4 +1,4 @@
-from .models import Product, Category, Type, SubType
+from .models import Product, Category, ProductType, ProductSubType
 from rest_framework.serializers import ModelSerializer
 
 
@@ -19,14 +19,14 @@ class ProductSerializer(ModelSerializer):
 
 class ProductSubTypeSerializer(ModelSerializer):
     class Meta:
-        model = SubType
+        model = ProductSubType
         fields = "__all__"
 
 
 class ProductTypeSerializer(ModelSerializer):
 
     class Meta:
-        model = Type
+        model = ProductType
         fields = "__all__"
 
 

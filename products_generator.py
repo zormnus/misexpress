@@ -5,7 +5,7 @@ from products.models import (
     Size,
     Brand,
     ManufacturerCountry,
-    SubType,
+    ProductSubType,
 )
 import random
 
@@ -32,4 +32,6 @@ def generate_products(num):
             manufacturerCountry=ManufacturerCountry.objects.order_by("?").first(),
         )
         product.save()
-        product.subTypes.add(*SubType.objects.order_by("?")[: random.randint(1, 3)])
+        product.subTypes.add(
+            *ProductSubType.objects.order_by("?")[: random.randint(1, 3)]
+        )

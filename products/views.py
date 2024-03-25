@@ -5,7 +5,7 @@ from .serializers import (
     ProductTypeSerializer,
     ProductSubTypeSerializer,
 )
-from .models import Product, Category, Type, SubType
+from .models import Product, Category, ProductType, ProductSubType
 from .permissions import IsAdminUserOrReadOnly
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
 from drf_spectacular.types import OpenApiTypes
@@ -140,9 +140,9 @@ class ProductCategoriesViewSet(
 
     def retrieve(self, request, *args, **kwargs):
         category = self.get_object()
-        queryset = SubType.objects.select_related("type", "type__category").filter(
-            type__category=category
-        )
+        queryset = ProductSubType.objects.select_related(
+            "type", "type__category"
+        ).filter(type__category=category)
         category_relations_data = ProductsService.get_category_relations(queryset)
         return JsonResponse(
             data=category_relations_data,
@@ -176,7 +176,7 @@ class ProductTypesViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Type.objects.all()
+    queryset = ProductType.objects.all()
     permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductTypeSerializer
 
@@ -206,6 +206,6 @@ class ProductSubTypesViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = SubType.objects.all()
+    queryset = ProductSubType.objects.all()
     permission_classes = [IsAdminUserOrReadOnly]
     serializer_class = ProductSubTypeSerializer

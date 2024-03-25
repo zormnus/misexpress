@@ -48,7 +48,7 @@ class Category(models.Model):
         ordering = ["-name"]
 
 
-class Type(models.Model):
+class ProductType(models.Model):
     name = models.CharField(
         max_length=255,
     )
@@ -67,12 +67,12 @@ class Type(models.Model):
         unique_together = ("name", "category")
 
 
-class SubType(models.Model):
+class ProductSubType(models.Model):
     name = models.CharField(
         max_length=255,
     )
     type = models.ForeignKey(
-        Type,
+        ProductType,
         on_delete=models.CASCADE,
     )
 
@@ -133,7 +133,7 @@ class Product(models.Model):
         blank=True,
     )
     subTypes = models.ManyToManyField(
-        SubType,
+        ProductSubType,
     )
     brand = models.ForeignKey(
         Brand,
