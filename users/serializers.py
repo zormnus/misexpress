@@ -1,4 +1,6 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ValidationError
+
+from products.models import Product
 from .models import Review, User, OrderProduct
 
 
@@ -56,3 +58,10 @@ class CartProductSerializer(ModelSerializer):
     class Meta:
         model = OrderProduct
         fields = "__all__"
+
+    def validate(self, data):
+        # Controlling amount of creating/updating cart position
+        product = Product.objects.get(pk=data["product"].pk)
+        if product.amount < data["amount"]:
+            raise ValidationError("Too much product in the cart")
+        return data

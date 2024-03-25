@@ -17,5 +17,6 @@ class UserService:
 
     @staticmethod
     def get_user_by_order_id(order_id: int) -> User:
+        print(order_id)
         order = Order.objects.filter(pk=order_id).select_related("user").first()
         return order.user
