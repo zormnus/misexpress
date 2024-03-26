@@ -60,6 +60,18 @@ class TokenVerifyViewDoc(TokenVerifyView):
 
 @extend_schema(tags=["reviews"])
 @extend_schema_view(
+    list=extend_schema(
+        summary="Get all reviews of product endpoint",
+        parameters=[
+            OpenApiParameter(
+                name="product_id",
+                description="Reviews filtering by product id",
+                type=OpenApiTypes.INT,
+                required=True,
+                location=OpenApiParameter.QUERY,
+            )
+        ],
+    ),
     create=extend_schema(
         summary="Create user's review endpoint",
     ),
@@ -73,15 +85,27 @@ class TokenVerifyViewDoc(TokenVerifyView):
         summary="Partial update user's review endpoint",
     ),
 )
-class ReviewsProcessViewSet(
+class ReviewsViewSet(
+    mixins.ListModelMixin,
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
     viewsets.GenericViewSet,
 ):
-    queryset = Review.objects.all()
+    queryset = Review.objects.select_related("user", "product")
     permission_classes = [IsOwnerOrAdminUserReviewPermission]
     serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        request_data = self.request.GET
+        filter_result = reviews_filters.apply_product_reviews_filter(
+            request_data,
+            self.queryset,
+        )
+        if filter_result:
+            self.queryset = filter_result
+            return super().get_queryset()
+        return Review.objects.none()
 
     def get_serializer_class(self):
         if self.action == "create":
