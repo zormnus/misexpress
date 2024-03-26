@@ -37,7 +37,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = []
 
-if DEBUG:
+if not DEBUG:
     ALLOWED_HOSTS = ["mis-express.com"]
 
 if DEBUG:
