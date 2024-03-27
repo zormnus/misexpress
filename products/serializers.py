@@ -17,6 +17,12 @@ class ProductSerializer(ModelSerializer):
         fields = "__all__"
 
 
+class ProductLightSerializer(ModelSerializer):
+    class Meta:
+        model = Product
+        fields = "__all__"
+
+
 class ProductSubTypeSerializer(ModelSerializer):
     class Meta:
         model = ProductSubType
@@ -35,17 +41,3 @@ class ProductCategoriesSerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
-
-
-[
-    {
-        "type_name1": {
-            "name": "type_name1",
-            "subtypes": [{"name": "subtype_name1"}, {"name": "subtype_name2"}],
-        },
-        "type_name2": {
-            "name": "type_name2",
-            "subtypes": [{"name": "subtype_name5"}, {"name": "subtype_name7"}],
-        },
-    },
-]

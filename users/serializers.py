@@ -2,6 +2,7 @@ from rest_framework.serializers import ModelSerializer, ValidationError
 
 from products.models import Product
 from .models import Review, User, OrderProduct
+from products.serializers import ProductLightSerializer
 
 
 class ReviewSerializer(ModelSerializer):
@@ -54,7 +55,16 @@ class StaffUserLoginSerializer(ModelSerializer, BaseUserConfig):
         return super().user_save(validated_data)
 
 
+class CartProductReadSerializer(ModelSerializer):
+    product = ProductLightSerializer(read_only=True)
+
+    class Meta:
+        model = OrderProduct
+        fields = "__all__"
+
+
 class CartProductSerializer(ModelSerializer):
+
     class Meta:
         model = OrderProduct
         fields = "__all__"

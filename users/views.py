@@ -12,12 +12,13 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Review, User, OrderProduct
 from .permissions import (
     IsOwnerOrAdminUserReviewPermission,
-    # IsOwnerOrAdminCartProductPermission,
+    IsOwnerOrAdminCartProductPermission,
 )
 from .serializers import (
     ReviewSerializer,
     LightReviewSerializer,
     CustomerUserLoginSerializer,
+    CartProductReadSerializer,
     CartProductSerializer,
 )
 from .services.reviews_service import ReviewService
@@ -162,9 +163,27 @@ class CartViewSet(
     viewsets.GenericViewSet,
 ):
     queryset = OrderProduct.objects.select_related("order", "product")
-    serializer_class = CartProductSerializer
+    serializer_class = CartProductReadSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_serializer(self, *args, **kwargs):
+        if self.request.method == "GET":
+            self.serializer_class = CartProductReadSerializer
+        else:
+            self.serializer_class = CartProductSerializer
+        return super().get_serializer(*args, **kwargs)
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            self.permission_classes = [IsAuthenticated]
+        else:
+            self.permission_classes = [
+                IsAuthenticated,
+                IsOwnerOrAdminCartProductPermission,
+            ]
+        return super().get_permissions()
+
     def get_queryset(self):
-        self.queryset = self.queryset.filter(order__user=self.request.user)
+        if self.request.method == "GET":
+            self.queryset = self.queryset.filter(order__user=self.request.user)
         return super().get_queryset()
