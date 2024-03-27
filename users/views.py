@@ -8,10 +8,11 @@ from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiPara
 from drf_spectacular.types import OpenApiTypes
 from rest_framework import viewsets, mixins
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from .models import Review, User, OrderProduct
 from .permissions import (
     IsOwnerOrAdminUserReviewPermission,
-    IsOwnerOrAdminCartProductPermission,
+    # IsOwnerOrAdminCartProductPermission,
 )
 from .serializers import (
     ReviewSerializer,
@@ -19,7 +20,7 @@ from .serializers import (
     CustomerUserLoginSerializer,
     CartProductSerializer,
 )
-from .services import reviews_service
+from .services.reviews_service import ReviewService
 
 from django.db.utils import IntegrityError
 from django.http import HttpResponse
@@ -98,7 +99,7 @@ class ReviewsViewSet(
 
     def get_queryset(self):
         request_data = self.request.GET
-        filter_result = reviews_filters.apply_product_reviews_filter(
+        filter_result = ReviewService.apply_product_reviews_filter(
             request_data,
             self.queryset,
         )
@@ -122,40 +123,6 @@ class ReviewsViewSet(
                 status=status.HTTP_400_BAD_REQUEST,
                 content="That review is already created",
             )
-
-
-@extend_schema(tags=["reviews"])
-@extend_schema_view(
-    list=extend_schema(
-        summary="Get all reviews of product endpoint",
-        parameters=[
-            OpenApiParameter(
-                name="product_id",
-                description="Reviews filtering by product id",
-                type=OpenApiTypes.INT,
-                required=True,
-                location=OpenApiParameter.QUERY,
-            )
-        ],
-    ),
-)
-class ReviewsViewSet(
-    mixins.ListModelMixin,
-    viewsets.GenericViewSet,
-):
-    queryset = Review.objects.select_related("user", "product")
-    serializer_class = ReviewSerializer
-
-    def get_queryset(self):
-        request_data = self.request.GET
-        filter_result = reviews_service.apply_product_reviews_filter(
-            request_data,
-            self.queryset,
-        )
-        if filter_result:
-            self.queryset = filter_result
-            return super().get_queryset()
-        return Review.objects.none()
 
 
 @extend_schema(tags=["signup"])
@@ -185,15 +152,7 @@ class UserCreateViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         summary="Delete product from cart endpoint",
     ),
     list=extend_schema(
-        summary="Get cart of user endpoint",
-        parameters=[
-            OpenApiParameter(
-                name="user_id",
-                description="Cart owner id",
-                type=OpenApiTypes.DECIMAL,
-                required=True,
-            ),
-        ],
+        summary="Get cart of current user endpoint",
     ),
 )
 class CartViewSet(
@@ -204,17 +163,8 @@ class CartViewSet(
 ):
     queryset = OrderProduct.objects.select_related("order", "product")
     serializer_class = CartProductSerializer
-    permission_classes = [IsOwnerOrAdminCartProductPermission]
+    permission_classes = [IsAuthenticated]
 
-    def list(self, request, *args, **kwargs):
-        request_data = request.GET
-        filter_results = CartService.get_user_cart(
-            request_data=request_data,
-            queryset=self.queryset,
-        )
-        if filter_results is not None:
-            self.queryset = filter_results
-            return super().list(request, *args, **kwargs)
-        return HttpResponse(
-            status=status.HTTP_400_BAD_REQUEST, content="User id is required"
-        )
+    def get_queryset(self):
+        self.queryset = self.queryset.filter(order__user=self.request.user)
+        return super().get_queryset()
