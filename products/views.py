@@ -113,6 +113,9 @@ class ProductsViewSet(
     list=extend_schema(
         summary="Get all products categories endpoint",
     ),
+    retrieve=extend_schema(
+        summary="Get product category with joined types and subtypes",
+    ),
     create=extend_schema(
         summary="Create product category endpoint",
     ),

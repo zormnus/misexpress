@@ -15,7 +15,7 @@ class User(AbstractUser):
     )
 
     def __str__(self) -> str:
-        return f"User {self.username}"
+        return f"Пользователь {self.username}"
 
 
 class Review(models.Model):
@@ -113,3 +113,6 @@ class OrderProduct(models.Model):
         verbose_name = "Order to Product"
         verbose_name_plural = "Orders to Products"
         ordering = ["amount"]
+
+    def __str__(self) -> str:
+        return f"Товар {self.product} [{self.order}] в количестве {self.amount} шт."
