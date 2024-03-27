@@ -144,8 +144,9 @@ class ProductCategoriesViewSet(
             "type", "type__category"
         ).filter(type__category=category)
         category_relations_data = ProductsService.get_category_relations(queryset)
+        response_data = {category.name: category_relations_data}
         return JsonResponse(
-            data=category_relations_data,
+            data=response_data,
             safe=False,
             json_dumps_params={"ensure_ascii": False},
         )
